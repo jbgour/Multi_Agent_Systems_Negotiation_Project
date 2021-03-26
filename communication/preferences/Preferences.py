@@ -85,9 +85,10 @@ class Preferences:
         item_list.remove(item)
         is_top_item = True
         for item_to_compare in item_list:
-            if not self.is_preferred_item(item, item_to_compare):
+            if not self.is_preferred_item(item_to_compare, item):
                 rank += 1
-            if rank >= max(1, n / 10):
+                print(rank)
+            if rank > max(1, n / 10):
                 is_top_item = False
                 return is_top_item
         return is_top_item
@@ -135,3 +136,13 @@ if __name__ == '__main__':
     print('Electric Engine (for agent 1) = {}'.format(electric_engine.get_score(agent_pref)))
     print('Diesel Engine (for agent 1) = {}'.format(diesel_engine.get_score(agent_pref)))
     print('Most preferred item is : {}'.format(agent_pref.most_preferred([diesel_engine, electric_engine]).get_name()))
+
+    """test most_preferred function"""
+    item_list = [electric_engine, diesel_engine]
+    print('Most prefered item of the list : {}'.format(agent_pref.most_preferred(item_list)))
+    """test is_item_among_top_10_percent"""
+
+    """test is_item_among_top_10_percent"""
+    item_list = [electric_engine, diesel_engine]
+    print('Is item in top 10 percent : {}'.format(agent_pref.is_item_among_top_10_percent(electric_engine, item_list)))
+    """test is_item_among_top_10_percent"""
