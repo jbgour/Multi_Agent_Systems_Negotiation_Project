@@ -67,15 +67,29 @@ class Preferences:
         """Returns the most preferred item from a list.
         """
         # To be completed
+        best_item = item_list[0]
+        for item in item_list[1:]:
+            if self.is_preferred_item(item, best_item):
+                best_item = item
         return best_item
 
-    def is_item_among_top_10_percent(self, item):
+    def is_item_among_top_10_percent(self, item, item_list):
         """
         Return whether a given item is among the top 10 percent of the preferred items.
 
         :return: a boolean, True means that the item is among the favourite ones
         """
         # To be completed
+        n = len(item_list)
+        rank = 1
+        item_list.remove(item)
+        is_top_item = True
+        for item_to_compare in item_list:
+            if not self.is_preferred_item(item, item_to_compare):
+                rank += 1
+            if rank >= max(1, n / 10):
+                is_top_item = False
+                return is_top_item
         return is_top_item
 
 
