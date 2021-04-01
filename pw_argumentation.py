@@ -4,6 +4,11 @@ from mesa.time import RandomActivation
 from communication.agent.CommunicatingAgent import CommunicatingAgent
 from communication.message.MessageService import MessageService
 from communication.preferences.Preferences import Preferences
+from communication.preferences.Item import Item
+from communication.mailbox.Mailbox import Mailbox
+from communication.message.MessagePerformative import MessagePerformative
+from communication.message.Message import Message
+
 import csv
 
 
@@ -52,7 +57,13 @@ class ArgumentModel(Model):
     def __init__(self):
         self.schedule = RandomActivation(self)
         self.__messages_service = MessageService(self.schedule)
-
+        Item1 = Item('Item1', description='first item')
+        Item2 = Item('Item2', description='second item')
+        list_items = [Item1,Item2]
+        for i in range(2):
+            a = TestAgent(i, self, "Agent" + str(i))
+            self.schedule.add(a)
+        self.running = True
         # To be completed
         # list_items = [...]
         #
@@ -85,4 +96,71 @@ if __name__ == "__main__":
 
     print('Agent 1 Criterions: {}'.format(Agent1.get_preference().get_criterion_name_list()))
     print('Agent 2 Criterions: {}'.format(Agent2.get_preference().get_criterion_name_list()))
+
+    Item1 = Item('Item1',description='first item')
+    Item2 = Item('Item2',description='second item')
+
+    mailbox = Mailbox()
+    m1 = Message("Agent1", "Agent2", MessagePerformative.PROPOSE, "Bonjour")
+    m2 = Message("Agent1", "Agent2", MessagePerformative.ACCEPT, "Hello")
+    m3 = Message("Agent2", "Agent1", MessagePerformative.ARGUE, "Buenos Dias")
+
+    mailbox.receive_messages(m1)
+    mailbox.receive_messages(m2)
+
+    assert(len(mailbox.get_new_messages()) == 2)
+    print("*     get_new_messages() => OK")
+    assert(len(mailbox.get_messages()) == 2)
+    print("*     get_messages() => OK")
+
+    mailbox.receive_messages(m3)
+    assert(len(mailbox.get_messages()) == 3)
+    assert(len(mailbox.get_messages_from_exp("Agent1")) == 2)
+    print("*     get_messages_from_exp() => OK")
+    assert(len(mailbox.get_messages_from_performative(MessagePerformative.ACCEPT)) == 1)
+    assert(len(mailbox.get_messages_from_performative(MessagePerformative.PROPOSE)) == 1)
+    assert(len(mailbox.get_messages_from_performative(MessagePerformative.ARGUE)) == 1)
+    print("*     get_messages_from_performative() => OK")
+
+    print("* 2) Testing CommunicatingAgent & MessageService")
+
+    communicating_model = TestModel()
+
+    assert(len(communicating_model.schedule.agents) == 2)
+    print("*     get the number of CommunicatingAgent => OK")
+
+    agent0 = communicating_model.schedule.agents[0]
+    agent1 = communicating_model.schedule.agents[1]
+
+    assert(agent0.get_name() == "Agent0")
+    assert(agent1.get_name() == "Agent1")
+    print("*     get_name() => OK")
+
+    agent0.send_message(Message("Agent0", "Agent1", MessagePerformative.COMMIT, "Bonjour"))
+    agent1.send_message(Message("Agent1", "Agent0", MessagePerformative.COMMIT, "Bonjour"))
+    agent0.send_message(Message("Agent0", "Agent1", MessagePerformative.COMMIT, "Comment ça va ?"))
+
+    assert(len(agent0.get_new_messages()) == 1)
+    assert(len(agent1.get_new_messages()) == 2)
+    assert(len(agent0.get_messages()) == 1)
+    assert(len(agent1.get_messages()) == 2)
+    print("*     send_message() & dispatch_message (instant delivery) => OK")
+
+    MessageService.get_instance().set_instant_delivery(False)
+
+    agent0.send_message(Message("Agent0", "Agent1", MessagePerformative.COMMIT, "Bonjour"))
+    agent1.send_message(Message("Agent1", "Agent0", MessagePerformative.COMMIT, "Bonjour"))
+    agent0.send_message(Message("Agent0", "Agent1", MessagePerformative.COMMIT, "Comment ça va ?"))
+
+    assert(len(agent0.get_messages()) == 1)
+    assert(len(agent1.get_messages()) == 2)
+
+    communicating_model.step()
+
+    assert(len(agent0.get_new_messages()) == 1)
+    assert(len(agent1.get_new_messages()) == 2)
+    assert(len(agent0.get_messages()) == 2)
+    assert(len(agent1.get_messages()) == 4)
+    print("*     send_message() & dispatch_messages => OK")
+
 
