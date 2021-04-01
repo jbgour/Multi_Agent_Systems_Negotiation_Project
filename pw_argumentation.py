@@ -61,7 +61,7 @@ class ArgumentModel(Model):
         Item2 = Item('Item2', description='second item')
         list_items = [Item1,Item2]
         for i in range(2):
-            a = TestAgent(i, self, "Agent" + str(i))
+            a = ArgumentAgent(i, self, "Agent" + str(i))
             self.schedule.add(a)
         self.running = True
         # To be completed
@@ -124,7 +124,7 @@ if __name__ == "__main__":
 
     print("* 2) Testing CommunicatingAgent & MessageService")
 
-    communicating_model = TestModel()
+    communicating_model = ArgumentModel()
 
     assert(len(communicating_model.schedule.agents) == 2)
     print("*     get the number of CommunicatingAgent => OK")
