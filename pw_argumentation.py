@@ -8,6 +8,8 @@ from communication.preferences.Item import Item
 from communication.mailbox.Mailbox import Mailbox
 from communication.message.MessagePerformative import MessagePerformative
 from communication.message.Message import Message
+from communication.preferences.Preferences import CriterionValue
+
 
 import csv
 
@@ -36,7 +38,7 @@ class ArgumentAgent(CommunicatingAgent):
     def get_preference(self):
         return self.preference
 
-    def generate_preferences(self, preferences):
+    def generate_preferences(self, preferences, item_list):
         """
         Set the preferences of the agent
         preferences : dict type
@@ -46,8 +48,12 @@ class ArgumentAgent(CommunicatingAgent):
         self.preference = Preferences()
         self.preference.set_criterion_name_list(criterion_name_list)
         for criterion_name in criterion_name_list:
-            criterion_value = preferences[criterion_name]
+            self.preference.add_criterion_name(criterion_name)
+            #print(criterion_name)
+            criterion_value = CriterionValue(Item1, criterion_name, preferences[criterion_name])
+            #print(criterion_value)
             self.preference.add_criterion_value(criterion_value)
+        print("lopp done")
 
 
 class ArgumentModel(Model):
@@ -59,7 +65,7 @@ class ArgumentModel(Model):
         self.__messages_service = MessageService(self.schedule)
         Item1 = Item('Item1', description='first item')
         Item2 = Item('Item2', description='second item')
-        list_items = [Item1,Item2]
+        self.list_items = [Item1,Item2]
         for i in range(2):
             a = ArgumentAgent(i, self, "Agent" + str(i))
             self.schedule.add(a)
@@ -91,18 +97,32 @@ if __name__ == "__main__":
     Agent1 = ArgumentAgent(1, argument_model, "Agent1")
     Agent2 = ArgumentAgent(2, argument_model, "Agent2")
 
-    Agent1.generate_preferences(csv_to_dict(preferences_path['Agent1']))
-    Agent2.generate_preferences(csv_to_dict(preferences_path['Agent2']))
+    Item1 = Item('Item1', description='first item')
+    Item2 = Item('Item2', description='second item')
+    item_list = [Item1, Item2]
+
+    Agent1.generate_preferences(csv_to_dict(preferences_path['Agent1']),item_list)
+    Agent2.generate_preferences(csv_to_dict(preferences_path['Agent2']),item_list)
 
     print('Agent 1 Criterions: {}'.format(Agent1.get_preference().get_criterion_name_list()))
     print('Agent 2 Criterions: {}'.format(Agent2.get_preference().get_criterion_name_list()))
 
-    Item1 = Item('Item1',description='first item')
-    Item2 = Item('Item2',description='second item')
+
 
     mailbox = Mailbox()
-    m1 = Message("Agent1", "Agent2", MessagePerformative.PROPOSE, "Bonjour")
-    m2 = Message("Agent1", "Agent2", MessagePerformative.ACCEPT, "Hello")
+    m1 = Message("Agent1", "Agent2", MessagePerformative.PROPOSE, Item1)
+    print(m1)
+    item = m1.get_content()
+    print(item)
+    if Agent2.get_preference().is_item_among_top_10_percent(item, item_list):
+        m2 = Message("Agent1", "Agent2", MessagePerformative.ACCEPT, item)
+        print(m2)
+    else:
+        m2 = Message("Agent1", "Agent2", MessagePerformative.ASK_WHY, item)
+        print(m2)
+
+
+    print("exchange done")
     m3 = Message("Agent2", "Agent1", MessagePerformative.ARGUE, "Buenos Dias")
 
     mailbox.receive_messages(m1)

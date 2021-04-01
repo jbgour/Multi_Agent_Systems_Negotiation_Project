@@ -36,15 +36,23 @@ class Preferences:
         """
         self.__criterion_name_list = criterion_name_list
 
+    def add_criterion_name(self, criterion_name):
+        """Adds a criterion value in the list.
+        """
+        self.__criterion_name_list.append(criterion_name)
+
     def add_criterion_value(self, criterion_value):
         """Adds a criterion value in the list.
         """
         self.__criterion_value_list.append(criterion_value)
 
+
     def get_value(self, item, criterion_name):
         """Gets the value for a given item and a given criterion name.
         """
         for value in self.__criterion_value_list:
+            print(value)
+            print("djb")
             if value.get_item() == item and value.get_criterion_name() == criterion_name:
                 return value.get_value()
         return None
