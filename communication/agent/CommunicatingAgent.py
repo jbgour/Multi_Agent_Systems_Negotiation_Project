@@ -19,13 +19,14 @@ class CommunicatingAgent(Agent):
         message_service: The message service used to send and receive message (MessageService)
     """
 
-    def __init__(self, unique_id, model, name):
+    def __init__(self, unique_id, model, name, item_list):
         """ Create a new communicating agent.
         """
         super().__init__(unique_id, model)
         self.__name = name
         self.__mailbox = Mailbox()
         self.__messages_service = MessageService.get_instance()
+        self.__item_list = item_list
 
     def step(self):
         """ The step methods of the agent called by the scheduler at each time tick.
@@ -65,3 +66,9 @@ class CommunicatingAgent(Agent):
         """ Return a list of messages which have the same sender.
         """
         return self.__mailbox.get_messages_from_exp(exp)
+
+    def get_item_list(self):
+        return self.__item_list
+
+    def remove_item(self, item):
+        self.__item_list.remove(item)

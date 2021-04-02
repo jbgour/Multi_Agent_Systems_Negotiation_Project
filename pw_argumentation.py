@@ -25,8 +25,8 @@ class ArgumentAgent(CommunicatingAgent):
     TestAgent which inherit from CommunicatingAgent.
     """
 
-    def __init__(self, unique_id, model, name):
-        super().__init__(unique_id, model, name)
+    def __init__(self, unique_id, model, name, item_list):
+        super().__init__(unique_id, model, name, item_list)
         self.preference = None
 
     def step(self):
@@ -35,12 +35,13 @@ class ArgumentAgent(CommunicatingAgent):
     def get_preference(self):
         return self.preference
 
-    def generate_preferences(self, preferences, item_list):
+    def generate_preferences(self, preferences):
         """
         Set the preferences of the agent
         preferences : dict type
         """
         # To be completed
+        item_list = self.get_item_list()
         criterion_name_list = list(preferences['CRITERION'].values())
         self.preference = Preferences()
         self.preference.set_criterion_name_list([CriterionName[criterion] for criterion in criterion_name_list])
@@ -62,7 +63,7 @@ class ArgumentModel(Model):
         Item2 = Item('Item2', description='second item')
         self.list_items = [Item1,Item2]
         for i in range(2):
-            a = ArgumentAgent(i, self, "Agent" + str(i))
+            a = ArgumentAgent(i, self, "Agent" + str(i), self.list_items)
             self.schedule.add(a)
         self.running = True
         # To be completed
@@ -88,33 +89,58 @@ if __name__ == "__main__":
         'Agent2': 'agent2.csv'
     }
 
-    # To be completed
-    print("Creating Agents...")
-    Agent1 = ArgumentAgent(1, argument_model, "Agent1")
-    Agent2 = ArgumentAgent(2, argument_model, "Agent2")
-
     print("Creating Items...")
     Item1 = Item('Item1', description='first item')
     Item2 = Item('Item2', description='second item')
     item_list = [Item1, Item2]
+    item_list2 = [Item1, Item2]
+
+    # To be completed
+    print("Creating Agents...")
+    Agent1 = ArgumentAgent(1, argument_model, "Agent1", item_list)
+    Agent2 = ArgumentAgent(2, argument_model, "Agent2", item_list2)
 
     print("Generating Preferences...")
-    Agent1.generate_preferences(csv_to_dict(preferences_path['Agent1']),item_list)
-    Agent2.generate_preferences(csv_to_dict(preferences_path['Agent2']),item_list)
+    Agent1.generate_preferences(csv_to_dict(preferences_path['Agent1']))
+    Agent2.generate_preferences(csv_to_dict(preferences_path['Agent2']))
 
     print("Starting Communication...")
+    acceptance = False
     mailbox = Mailbox()
     m1 = Message("Agent1", "Agent2", MessagePerformative.PROPOSE, Item1)
     print("First message is : " + str(m1))
     item = m1.get_content()
-    if Agent2.get_preference().is_item_among_top_10_percent(item, item_list):
-        m2 = Message("Agent1", "Agent2", MessagePerformative.ACCEPT, item)
+    print(Agent1.get_item_list())
+    if Agent2.get_preference().is_item_among_top_10_percent(item, Agent2.get_item_list()):
+        m2 = Message("Agent2", "Agent1", MessagePerformative.ACCEPT, item)
+        acceptance = True
     else:
-        m2 = Message("Agent1", "Agent2", MessagePerformative.ASK_WHY, item)
+        m2 = Message("Agent2", "Agent1", MessagePerformative.ASK_WHY, item)
+        acceptance = False
     print("Second message is : " + str(m2))
 
+    print("Items of Agent1 are: "+str([i.get_name() for i in Agent1.get_item_list()]))
+    print("Items of Agent2 are: "+str([i.get_name() for i in Agent2.get_item_list()]))
+
+    if acceptance:
+        if item.get_name() in [i.get_name() for i in Agent1.get_item_list()] and item.get_name() in [i.get_name() for i in Agent2.get_item_list()]:
+            m3 = Message("Agent1", "Agent2", MessagePerformative.COMMIT, item)
+            m4 = Message("Agent2", "Agent1", MessagePerformative.COMMIT, item)
+            Agent1.remove_item(item)
+            print("Items of Agent1 are: " + str([i.get_name() for i in Agent1.get_item_list()]))
+            print("Items of Agent2 are: " + str([i.get_name() for i in Agent2.get_item_list()]))
+            Agent2.remove_item(item)
+            print("Items of Agent1 are: " + str([i.get_name() for i in Agent1.get_item_list()]))
+            print("Items of Agent2 are: " + str([i.get_name() for i in Agent2.get_item_list()]))
+            print(Agent2.get_item_list())
+        else:
+            m3 = Message("Agent1", "Agent2", MessagePerformative.ARGUE, item)
 
     print("exchange done")
+
+
+
+
     m3 = Message("Agent2", "Agent1", MessagePerformative.ARGUE, "Buenos Dias")
 
     mailbox.receive_messages(m1)

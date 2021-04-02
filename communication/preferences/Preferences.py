@@ -83,15 +83,15 @@ class Preferences:
         # To be completed
         n = len(item_list)
         rank = 1
-        item_list.remove(item)
         is_top_item = True
         for item_to_compare in item_list:
-            if not self.is_preferred_item(item_to_compare, item):
-                rank += 1
-                print(rank)
-            if rank > max(1, n / 10):
-                is_top_item = False
-                return is_top_item
+            if not item == item_to_compare:
+                if not self.is_preferred_item(item_to_compare, item):
+                    rank += 1
+                    print(rank)
+                if rank > max(1, n / 10):
+                    is_top_item = False
+                    return is_top_item
         return is_top_item
 
 
