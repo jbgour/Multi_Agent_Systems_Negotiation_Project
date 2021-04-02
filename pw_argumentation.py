@@ -17,13 +17,7 @@ import pandas as pd
 
 
 def csv_to_dict(csv_path):
-    #reader = csv.reader(open(csv_path, mode='r', encoding='utf-8-sig'))
-    df = pd.read_csv('agent1.csv')
-    #preferences = {}
-    #for row in reader:
-    #    key = row[0]
-    #    preferences[key] = row[1]
-    #return preferences
+    df = pd.read_csv(csv_path)
     return df.to_dict()
 
 class ArgumentAgent(CommunicatingAgent):
@@ -50,7 +44,6 @@ class ArgumentAgent(CommunicatingAgent):
         criterion_name_list = list(preferences['CRITERION'].values())
         self.preference = Preferences()
         self.preference.set_criterion_name_list([CriterionName[criterion] for criterion in criterion_name_list])
-        print(self.preference.get_criterion_name_list())
         for item in item_list:
             i = 0
             for criterion_name in criterion_name_list:
