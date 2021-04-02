@@ -36,11 +36,6 @@ class Preferences:
         """
         self.__criterion_name_list = criterion_name_list
 
-    def add_criterion_name(self, criterion_name):
-        """Adds a criterion value in the list.
-        """
-        self.__criterion_name_list.append(criterion_name)
-
     def add_criterion_value(self, criterion_value):
         """Adds a criterion value in the list.
         """
@@ -51,9 +46,7 @@ class Preferences:
         """Gets the value for a given item and a given criterion name.
         """
         for value in self.__criterion_value_list:
-            print(value)
-            print("djb")
-            if value.get_item() == item and value.get_criterion_name() == criterion_name:
+            if value.get_item() == item and value.get_criterion_name() == criterion_name.name:
                 return value.get_value()
         return None
 
@@ -107,10 +100,12 @@ class Preferences:
 if __name__ == '__main__':
     """Testing the Preferences class.
     """
+
     agent_pref = Preferences()
     agent_pref.set_criterion_name_list([CriterionName.PRODUCTION_COST, CriterionName.ENVIRONMENT_IMPACT,
                                         CriterionName.CONSUMPTION, CriterionName.DURABILITY,
                                         CriterionName.NOISE])
+    print(agent_pref.get_criterion_name_list())
 
     diesel_engine = Item("Diesel Engine", "A super cool diesel engine")
     agent_pref.add_criterion_value(CriterionValue(diesel_engine, CriterionName.PRODUCTION_COST,
