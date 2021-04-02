@@ -72,3 +72,39 @@ class CommunicatingAgent(Agent):
 
     def remove_item(self, item):
         self.__item_list.remove(item)
+
+    def get_preference(self):
+        return self.preference
+
+    def List_supporting_proposal(self, item):
+        """Generate a list of arguments which can be used to support an item
+        :param item: Item - name of the item
+        :return: list of all arguments PRO an item (sorted by order of importance based on agent's preferences)
+        """
+        supporting_list = []
+        pref = self.get_preference()
+        criterion_name_list = pref.get_criterion_name_list()
+        criterion_value_list = pref.get_criterion_value_list()
+        for elt in criterion_value_list:
+            if elt.get_item() == item:
+                if elt.get_value().name == 'GOOD' or elt.get_value().name=='VERY_GOOD':
+                    supporting_list.append(elt.get_criterion_name())
+        return supporting_list
+
+
+    def List_attacking_proposal(self, item):
+        """Generate a list of arguments which can be used to attack an item
+        :param item: Item - name of the item
+        :return: list of all arguments CON an item (sorted by order of importance based on preferences)
+        """
+        negative_list = []
+        pref = self.get_preference()
+        criterion_name_list = pref.get_criterion_name_list()
+        criterion_value_list = pref.get_criterion_value_list()
+        for elt in criterion_value_list:
+            if elt.get_item() == item:
+                if elt.get_value().name == 'BAD' or elt.get_value().name=='VERY_BAD':
+                    negative_list.append(elt.get_criterion_name())
+        return negative_list
+        
+
