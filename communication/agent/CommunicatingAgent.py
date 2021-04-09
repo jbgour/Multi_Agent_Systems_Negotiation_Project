@@ -88,7 +88,7 @@ class CommunicatingAgent(Agent):
         for elt in criterion_value_list:
             if elt.get_item() == item:
                 if elt.get_value().name == 'GOOD' or elt.get_value().name=='VERY_GOOD':
-                    supporting_list.append(elt.get_criterion_name())
+                    supporting_list.append((elt.get_criterion_name(), elt.get_value()))
         return supporting_list
 
 
@@ -104,7 +104,7 @@ class CommunicatingAgent(Agent):
         for elt in criterion_value_list:
             if elt.get_item() == item:
                 if elt.get_value().name == 'BAD' or elt.get_value().name=='VERY_BAD':
-                    negative_list.append(elt.get_criterion_name())
+                    negative_list.append((elt.get_criterion_name(), elt.get_value()))
         return negative_list
         
     def support_proposal(self, item):
@@ -119,20 +119,20 @@ class CommunicatingAgent(Agent):
         if len(self.List_attacking_proposal(item))!=0:
             for elt in criterion_value_list:
                 if elt.get_value().name=='VERY_GOOD':
-                    return elt.get_criterion_name()
+                    return (elt.get_criterion_name(), elt.get_value())
                 elif elt.get_value().name=='GOOD':
-                    temp_return = elt.get_criterion_name()
+                    temp_return = (elt.get_criterion_name(),elt.get_value())
             return temp_return
         else:
             for elt in criterion_value_list:
                 if elt.get_value().name=='AVERAGE':
-                    return elt.get_criterion_name()
+                    return (elt.get_criterion_name(), elt.get_value())
                 if elt.get_value().name=='BAD':
-                    temp_return = elt.get_criterion_name()
+                    temp_return = (elt.get_criterion_name(), elt.get_value())
             if temp_return != "":
                 return temp_return
             else:
-                return criterion_value_list[0].get_criterion_name()
+                return (criterion_value_list[0].get_criterion_name(), criterion_value_list[0].get_value())
 
 
        

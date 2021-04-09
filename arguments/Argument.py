@@ -33,5 +33,10 @@ class Argument:
         """
         self.__couple_values_list.append(CoupleValue(criterion_name, value))
 
-  
+    def argument_parsing(self, argument):
+        """ returns ....
+        :param argument:
+        :return:
+        """
+        # To be completed
    
