@@ -11,6 +11,7 @@ from communication.message.Message import Message
 from communication.preferences.Preferences import CriterionValue
 from communication.preferences.CriterionName import CriterionName
 from communication.preferences.Value import Value
+from arguments.Argument import Argument
 
 import csv
 import pandas as pd
@@ -113,7 +114,7 @@ if __name__ == "__main__":
     print(Agent1.get_item_list())
     if Agent2.get_preference().is_item_among_top_10_percent(item, Agent2.get_item_list()):
         m2 = Message("Agent2", "Agent1", MessagePerformative.ACCEPT, item)
-        acceptance = True
+        acceptance = False
     else:
         m2 = Message("Agent2", "Agent1", MessagePerformative.ASK_WHY, item)
         acceptance = False
@@ -136,8 +137,20 @@ if __name__ == "__main__":
         else :
             print("Errror : item not in list")
     else:
-        m3 = Message("Agent1", "Agent2", MessagePerformative.ARGUE, (item.get_name(), Agent1.support_proposal(item)) )
+        #on commence à construire l'argumentation autour de l'item
+        argument_Agent1 = Argument(True, item)
+        argument_Agent2 = Argument(False, item)
+        for elt in Agent1.List_supporting_proposal(item):
+            argument_Agent1.add_premiss_couple_values(elt.get_criterion_name(), elt.get_value())
+        for elt in Agent2.List_supporting_proposal(item):
+            argument_Agent2.add_premiss_couple_values(elt.get_criterion_name(), elt.get_value())
+
+        m3 = Message("Agent1", "Agent2", MessagePerformative.ARGUE, (item.get_name(), Agent1.support_proposal(item)))
         print("Third message is : " + Agent1.argument_parsing(item))
+        mailbox.receive_messages(m3)
+        #l'autre agent n'est pas d'accord
+        m4 = Message("Agent2", "Agent1", MessagePerformative.ARGUE, (item.get_name(), Agent2.support_proposal(item)))
+        print("Third message is : " + Agent2.argument_parsing(item))
 
     print("exchange done")
 
