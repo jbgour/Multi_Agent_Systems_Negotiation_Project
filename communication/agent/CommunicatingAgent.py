@@ -4,6 +4,7 @@ from mesa import Agent
 
 from communication.mailbox.Mailbox import Mailbox
 from communication.message.MessageService import MessageService
+from arguments.Argument import Argument
 
 
 class CommunicatingAgent(Agent):
@@ -81,15 +82,14 @@ class CommunicatingAgent(Agent):
         :param item: Item - name of the item
         :return: list of all arguments PRO an item (sorted by order of importance based on agent's preferences)
         """
-        supporting_list = []
+        argument = Argument(boolean_decision=True, item=item)
         pref = self.get_preference()
-        criterion_name_list = pref.get_criterion_name_list()
         criterion_value_list = pref.get_criterion_value_list()
         for elt in criterion_value_list:
             if elt.get_item() == item:
-                if elt.get_value().name == 'GOOD' or elt.get_value().name=='VERY_GOOD':
-                    supporting_list.append((elt.get_criterion_name(), elt.get_value()))
-        return supporting_list
+                if elt.get_value().name == 'GOOD' or elt.get_value().name == 'VERY_GOOD':
+                    argument.add_premiss_couple_values(elt.get_criterion_name(), elt.get_value())
+        return argument
 
 
     def List_attacking_proposal(self, item):
@@ -97,43 +97,29 @@ class CommunicatingAgent(Agent):
         :param item: Item - name of the item
         :return: list of all arguments CON an item (sorted by order of importance based on preferences)
         """
-        negative_list = []
+        argument = Argument(boolean_decision=False, item=item)
         pref = self.get_preference()
-        criterion_name_list = pref.get_criterion_name_list()
         criterion_value_list = pref.get_criterion_value_list()
         for elt in criterion_value_list:
             if elt.get_item() == item:
-                if elt.get_value().name == 'BAD' or elt.get_value().name=='VERY_BAD':
-                    negative_list.append((elt.get_criterion_name(), elt.get_value()))
-        return negative_list
-        
+                if elt.get_value().name == 'BAD' or elt.get_value().name == 'VERY_BAD':
+                    argument.add_premiss_couple_values(elt.get_criterion_name(), elt.get_value())
+        return argument
+
     def support_proposal(self, item):
         """
         Used when the agent recieves "ASK_WHY" after having proposed an item
         :param item: str - name of the item which was proposed
         :return: string - the strongest supportive argument
         """
-        temp_return = ""
-        pref = self.get_preference()
-        criterion_value_list = pref.get_criterion_value_list()
-        if len(self.List_attacking_proposal(item))!=0:
-            for elt in criterion_value_list:
-                if elt.get_value().name=='VERY_GOOD':
-                    return (elt.get_criterion_name(), elt.get_value())
-                elif elt.get_value().name=='GOOD':
-                    temp_return = (elt.get_criterion_name(),elt.get_value())
-            return temp_return
-        else:
-            for elt in criterion_value_list:
-                if elt.get_value().name=='AVERAGE':
-                    return (elt.get_criterion_name(), elt.get_value())
-                if elt.get_value().name=='BAD':
-                    temp_return = (elt.get_criterion_name(), elt.get_value())
-            if temp_return != "":
-                return temp_return
+        #argument = Argument(boolean_decision=True, item=item)
+        possible_proposals = self.List_supporting_proposal(item).get_couple_values_list()
+        if len(possible_proposals) == 0:
+            return 'No arguments in favor of this item'
+        for proposal in possible_proposals:
+            if proposal.get_value().name == 'VERY_GOOD':
+                return proposal
             else:
-                return (criterion_value_list[0].get_criterion_name(), criterion_value_list[0].get_value())
-
-
-       
+                temp_proposal=proposal
+        return temp_proposal
 

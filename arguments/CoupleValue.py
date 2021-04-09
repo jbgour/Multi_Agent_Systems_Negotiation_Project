@@ -15,3 +15,9 @@ class CoupleValue:
         """
         self.__criterion_name = criterion_name
         self.__value = value
+
+    def get_criterion_name(self):
+        return self.__criterion_name
+
+    def get_value(self):
+        return self.__value

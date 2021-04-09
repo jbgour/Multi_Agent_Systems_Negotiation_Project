@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from communication.arguments.Comparison import Comparison
-from communication.arguments.CoupleValue import CoupleValue
+from arguments.Comparison import Comparison
+from arguments.CoupleValue import CoupleValue
 
 
 class Argument:
@@ -33,10 +33,15 @@ class Argument:
         """
         self.__couple_values_list.append(CoupleValue(criterion_name, value))
 
+    def get_couple_values_list(self):
+        return self.__couple_values_list
+
     def argument_parsing(self, argument):
         """ returns ....
         :param argument:
         :return:
         """
         # To be completed
-   
+
+        return self.__item + "because" + argument.get
+

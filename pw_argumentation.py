@@ -136,12 +136,12 @@ if __name__ == "__main__":
         else :
             print("Errror : item not in list")
     else:
-        m3 = Message("Agent1", "Agent2", MessagePerformative.ARGUE, (item, Agent1.support_proposal(item)) )
+        m3 = Message("Agent1", "Agent2", MessagePerformative.ARGUE, (item.get_name(), Agent1.support_proposal(item)) )
         print("Third message is : " + str(m3))
 
     print("exchange done")
 
 
     print(Agent1.List_attacking_proposal(Item2))
-    
+
     print(Agent1.List_supporting_proposal(Item2))
