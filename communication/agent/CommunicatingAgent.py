@@ -129,3 +129,9 @@ class CommunicatingAgent(Agent):
         # To be completed
         proposal = self.support_proposal(item)
         return item.get_name() + " because " + proposal.get_criterion_name() + " is " + proposal.get_value().name
+
+
+    def can_be_attacked(self, proposal, item):
+        positive_proposals = self.List_supporting_proposal(item)
+        return (proposal not in positive_proposals)
+          

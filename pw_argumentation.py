@@ -148,13 +148,17 @@ if __name__ == "__main__":
         m3 = Message("Agent1", "Agent2", MessagePerformative.ARGUE, (item.get_name(), Agent1.support_proposal(item)))
         print("Third message is : " + Agent1.argument_parsing(item))
         mailbox.receive_messages(m3)
-        #l'autre agent n'est pas d'accord
-        m4 = Message("Agent2", "Agent1", MessagePerformative.ARGUE, (item.get_name(), Agent2.support_proposal(item)))
-        print("Third message is : " + Agent2.argument_parsing(item))
-
+        can_be_attacked  = Agent2.can_be_attacked(Agent1.support_proposal,item)
+        if can_be_attacked:
+            #l'autre agent n'est pas d'accord
+            m4 = Message("Agent2", "Agent1", MessagePerformative.ARGUE, (item.get_name(), Agent2.support_proposal(item)))
+            print("Third message is : " + Agent2.argument_parsing(item))
+        else:
+            acceptance = True
+            m5 = Message("Agent1","Agent2", MessagePerformative.COMMIT, item)
+            m6 = Message("Agent2", "Agent1", MessagePerformative.COMMIT, item)
+            Agent1.remove_item(item)
+            Agent2.remove_item(item)
+            
     print("exchange done")
 
-
-    print(Agent1.List_attacking_proposal(Item2))
-
-    print(Agent1.List_supporting_proposal(Item2))
