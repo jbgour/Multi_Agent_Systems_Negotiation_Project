@@ -113,7 +113,7 @@ if __name__ == "__main__":
     print(Agent1.get_item_list())
     if Agent2.get_preference().is_item_among_top_10_percent(item, Agent2.get_item_list()):
         m2 = Message("Agent2", "Agent1", MessagePerformative.ACCEPT, item)
-        acceptance = True
+        acceptance = False
     else:
         m2 = Message("Agent2", "Agent1", MessagePerformative.ASK_WHY, item)
         acceptance = False
@@ -133,8 +133,11 @@ if __name__ == "__main__":
             print("Items of Agent1 are: " + str([i.get_name() for i in Agent1.get_item_list()]))
             print("Items of Agent2 are: " + str([i.get_name() for i in Agent2.get_item_list()]))
             print(Agent2.get_item_list())
-        else:
-            m3 = Message("Agent1", "Agent2", MessagePerformative.ARGUE, item)
+        else :
+            print("Errror : item not in list")
+    else:
+        m3 = Message("Agent1", "Agent2", MessagePerformative.ARGUE, (item, Agent1.support_proposal(item)) )
+        print("Third message is : " + str(m3))
 
     print("exchange done")
 

@@ -107,4 +107,33 @@ class CommunicatingAgent(Agent):
                     negative_list.append(elt.get_criterion_name())
         return negative_list
         
+    def support_proposal(self, item):
+        """
+        Used when the agent recieves "ASK_WHY" after having proposed an item
+        :param item: str - name of the item which was proposed
+        :return: string - the strongest supportive argument
+        """
+        temp_return = ""
+        pref = self.get_preference()
+        criterion_value_list = pref.get_criterion_value_list()
+        if len(self.List_attacking_proposal(item))!=0:
+            for elt in criterion_value_list:
+                if elt.get_value().name=='VERY_GOOD':
+                    return elt.get_criterion_name()
+                elif elt.get_value().name=='GOOD':
+                    temp_return = elt.get_criterion_name()
+            return temp_return
+        else:
+            for elt in criterion_value_list:
+                if elt.get_value().name=='AVERAGE':
+                    return elt.get_criterion_name()
+                if elt.get_value().name=='BAD':
+                    temp_return = elt.get_criterion_name()
+            if temp_return != "":
+                return temp_return
+            else:
+                return criterion_value_list[0].get_criterion_name()
+
+
+       
 
