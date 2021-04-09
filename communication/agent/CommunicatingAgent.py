@@ -89,8 +89,7 @@ class CommunicatingAgent(Agent):
             if elt.get_item() == item:
                 if elt.get_value().name == 'GOOD' or elt.get_value().name == 'VERY_GOOD':
                     argument.add_premiss_couple_values(elt.get_criterion_name(), elt.get_value())
-        return argument
-
+        return argument.get_couple_values_list()
 
     def List_attacking_proposal(self, item):
         """Generate a list of arguments which can be used to attack an item
@@ -104,7 +103,7 @@ class CommunicatingAgent(Agent):
             if elt.get_item() == item:
                 if elt.get_value().name == 'BAD' or elt.get_value().name == 'VERY_BAD':
                     argument.add_premiss_couple_values(elt.get_criterion_name(), elt.get_value())
-        return argument
+        return argument.get_couple_values_list()
 
     def support_proposal(self, item):
         """
@@ -112,14 +111,21 @@ class CommunicatingAgent(Agent):
         :param item: str - name of the item which was proposed
         :return: string - the strongest supportive argument
         """
-        #argument = Argument(boolean_decision=True, item=item)
-        possible_proposals = self.List_supporting_proposal(item).get_couple_values_list()
+        possible_proposals = self.List_supporting_proposal(item)
         if len(possible_proposals) == 0:
             return 'No arguments in favor of this item'
         for proposal in possible_proposals:
             if proposal.get_value().name == 'VERY_GOOD':
                 return proposal
             else:
-                temp_proposal=proposal
+                temp_proposal = proposal
         return temp_proposal
 
+    def argument_parsing(self, item):
+        """ returns ....
+        :param argument:
+        :return:
+        """
+        # To be completed
+        proposal = self.support_proposal(item)
+        return item.get_name() + " because " + proposal.get_criterion_name() + " is " + proposal.get_value().name

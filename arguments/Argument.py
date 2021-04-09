@@ -36,12 +36,5 @@ class Argument:
     def get_couple_values_list(self):
         return self.__couple_values_list
 
-    def argument_parsing(self, argument):
-        """ returns ....
-        :param argument:
-        :return:
-        """
-        # To be completed
 
-        return self.__item + "because" + argument.get
 
