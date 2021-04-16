@@ -13,7 +13,6 @@ from communication.preferences.CriterionName import CriterionName
 from communication.preferences.Value import Value
 from arguments.Argument import Argument
 
-import csv
 import pandas as pd
 
 
@@ -67,15 +66,6 @@ class ArgumentModel(Model):
             a = ArgumentAgent(i, self, "Agent" + str(i), self.list_items)
             self.schedule.add(a)
         self.running = True
-        # To be completed
-        # list_items = [...]
-        #
-        # a = ArgumentAgent(id, "agent_name")
-        # a.generate_preferences(preferences)
-        # self.schedule.add(a)
-        # ...
-
-        self.running = True
 
     def step(self):
         self.__messages_service.dispatch_messages()
@@ -114,7 +104,7 @@ if __name__ == "__main__":
     print(Agent1.get_item_list())
     if Agent2.get_preference().is_item_among_top_10_percent(item, Agent2.get_item_list()):
         m2 = Message("Agent2", "Agent1", MessagePerformative.ACCEPT, item)
-        acceptance = False
+        acceptance = True
     else:
         m2 = Message("Agent2", "Agent1", MessagePerformative.ASK_WHY, item)
         acceptance = False
